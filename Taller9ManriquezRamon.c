@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 // Prototipo reserva de memoria malloc()
+void CleanBuffer();
 void reservar_dos(int longitud, int **ptr);
 void mostrar(int *ptr, int longitud);
 void capturar(int *ptr, int longitud);
@@ -10,29 +11,66 @@ void reducir(int **ptr, int *longitud);
 
 int main(){
 	int *dir = NULL;
-	int longitud = 5, opc = 0;
+	int longitud = 1, opc = 0;
 	
 	do{
 		printf("--MENU--\n");
-		printf("");
+		printf("[1] Reservar memoria [2] Agregar elemento   [3] Eliminar Ultimo elemento\n");
+		printf("[4] Ordenar elemento [5] Desplegar elemento [6] Liberar memoria\n");
+		printf("[0] Terminar Programa\n Selecciona una opcion >> ");
+		scanf("%d", &opc);
 
+		// Switch case para el menu
+		switch(opc){
+			case 1: // reservar memoria
+				printf("Cuanta memoria desea reservar?\n>> ");
+				scanf("%d", &longitud);
+				CleanBuffer();
+				reservar_dos(longitud, &dir);
+				printf("Memoria Reservada\n");
+				capturar(dir, longitud);
+				break;
+			case 2: // Agregar Elemento
+				insertar(&dir, &longitud);
+				break;
+			case 3: // Eliminar Ultimo Elemento
+				reducir(&dir, &longitud);
+				break;
+			case 4: // Ordenar Elemento
+				break;
+			case 5: // Desplegar Elemento
+				mostrar(dir, longitud);
+				break;
+			case 6: // Liberar Memoria
+				if(dir == NULL){
+					printf("La memoria ya esta liberada\n");
+				}else{
+					free(dir);
+					dir = NULL;
+					printf("Memoria liberada\n");	
+				}
+				break;
+			case 0: // Salir
+				printf("Finalizando programa...\n");
+				return 0;
+				break;
+			default: // Invalido
+				printf("Opcion invalida...\n");
+				break;	
+		}
 	}while(opc != 0);
 
-	reservar_dos(longitud, &dir);
-	capturar(dir, longitud);
-	mostrar(dir, longitud);
-	insertar(&dir, &longitud);
-	mostrar(dir, longitud);
-	reducir(&dir, &longitud);
-	mostrar(dir, longitud);
 	
-	free(dir);
-	dir = NULL;	
 	return 0;
 }
 
+void CleanBuffer(){
+	char c;
+	while((c = getchar() ) != '\n' && c != EOF); 	
+}
+
 void reservar_dos(int longitud, int **ptr){
-	*ptr = (int*)malloc(longitud*sizeof(int));
+	*ptr = (int*)calloc(longitud,sizeof(int));
 }
 void mostrar(int *ptr, int longitud){
 	for(int i = 0; i < longitud; i++){
@@ -40,15 +78,13 @@ void mostrar(int *ptr, int longitud){
 	}
 }
 void capturar(int *ptr, int longitud){
-	char c;
 	for(int i = 0; i < longitud; i++){
 		printf("Captura [%d]\n>> ", i);
 		scanf("%d", &ptr[i]);
-		while((c = getchar() ) != '\n' && c != EOF); 	
+		CleanBuffer();
 	}
 }
 void insertar(int **ptr, int *longitud){
-	char c;
 	(*longitud)++;
 	int *aux = NULL;
 	while(aux == NULL){
@@ -58,7 +94,7 @@ void insertar(int **ptr, int *longitud){
 
 	printf("Captura [%d]\n>> ", *longitud-1);
 	scanf("%d", *ptr+*longitud-1);
-	while((c = getchar() ) != '\n' && c != EOF); 
+	CleanBuffer();
 }
 void reducir(int **ptr, int *longitud){
 	char c;
