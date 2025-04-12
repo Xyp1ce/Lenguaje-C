@@ -115,6 +115,7 @@ void reducir(int **ptr, int *longitud){
 void ordenar(int *ptr, int *longitud){
 	int aux = 0;
 	int ordenado = 0;
+	// Bubble Sort
 	while(ordenado == 0){
 		ordenado = 1;
 		for(int i = 0; i < *longitud - 1; i++){	
