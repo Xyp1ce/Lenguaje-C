@@ -8,7 +8,7 @@ void mostrar(int *ptr, int longitud);
 void capturar(int *ptr, int longitud);
 void insertar(int **ptr, int *longitud);
 void reducir(int **ptr, int *longitud);
-void ordenar(int **ptr);
+void ordenar(int *ptr, int *longitud);
 
 int main(){
 	int *dir = NULL;
@@ -18,7 +18,7 @@ int main(){
 		printf("--MENU--\n");
 		printf("[1] Reservar memoria [2] Agregar elemento   [3] Eliminar Ultimo elemento\n");
 		printf("[4] Ordenar elemento [5] Desplegar elemento [6] Liberar memoria\n");
-		printf("[0] Terminar Programa\n Selecciona una opcion >> ");
+		printf("[0] Terminar Programa\nSelecciona una opcion >> ");
 		scanf("%d", &opc);
 
 		// Switch case para el menu
@@ -38,7 +38,7 @@ int main(){
 				reducir(&dir, &longitud);
 				break;
 			case 4: // Ordenar Elemento
-				ordenar(&dir);
+				ordenar(dir, &longitud);
 				break;
 			case 5: // Desplegar Elemento
 				mostrar(dir, longitud);
@@ -112,6 +112,19 @@ void reducir(int **ptr, int *longitud){
 	}
 	
 }
-void ordenar(int **ptr){
-	
+void ordenar(int *ptr, int *longitud){
+	int aux = 0;
+	int ordenado = 0;
+	while(ordenado == 0){
+		ordenado = 1;
+		for(int i = 0; i < *longitud - 1; i++){	
+			if(ptr[i] > ptr [i+1]){
+				aux = ptr[i];
+				ptr[i] = ptr[i+1];
+				ptr[i+1] = aux;	
+				ordenado = 0;
+			}
+		}
+	}
+
 }
