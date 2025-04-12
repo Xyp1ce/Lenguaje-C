@@ -35,13 +35,21 @@ int main(){
 				insertar(&dir, &longitud);
 				break;
 			case 3: // Eliminar Ultimo Elemento
-				reducir(&dir, &longitud);
+				if(longitud != 0){
+					reducir(&dir, &longitud);
+				}else{
+					printf("No hay elementos para reducir\n");
+				}
 				break;
 			case 4: // Ordenar Elemento
 				ordenar(dir, &longitud);
 				break;
 			case 5: // Desplegar Elemento
-				mostrar(dir, longitud);
+				if(dir != NULL && longitud != 0){
+					mostrar(dir, longitud);
+				}else{
+					printf("No hay elemento para mostrar\n");
+				}
 				break;
 			case 6: // Liberar Memoria
 				if(dir == NULL){
