@@ -8,6 +8,7 @@ void mostrar(int *ptr, int longitud);
 void capturar(int *ptr, int longitud);
 void insertar(int **ptr, int *longitud);
 void reducir(int **ptr, int *longitud);
+void ordenar(int **ptr);
 
 int main(){
 	int *dir = NULL;
@@ -37,6 +38,7 @@ int main(){
 				reducir(&dir, &longitud);
 				break;
 			case 4: // Ordenar Elemento
+				ordenar(&dir);
 				break;
 			case 5: // Desplegar Elemento
 				mostrar(dir, longitud);
@@ -98,10 +100,18 @@ void insertar(int **ptr, int *longitud){
 }
 void reducir(int **ptr, int *longitud){
 	char c;
-	(*longitud)--;
-	int *aux = NULL;
-	while(aux == NULL){
-		aux = realloc(*ptr, (*longitud) * sizeof(int));
-		*ptr = aux;
+	if((*longitud) == 0){
+		printf("No se puede reducir la memoria\n");
+	}else{
+		(*longitud)--;
+		int *aux = NULL;
+		while(aux == NULL){
+			aux = realloc(*ptr, (*longitud) * sizeof(int));
+			*ptr = aux;
+		}
 	}
+	
+}
+void ordenar(int **ptr){
+	
 }
