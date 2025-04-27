@@ -1,75 +1,58 @@
 /*
-	Ramon Manriquez
+	Ramon Manriquez Guerrero 
 	2210376
-	Definicion de matrices dinamicas junto con multiplicaciones
-	04/22/2025
+	Matrices dinamicas y multiplicacino de matrices
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 
-// Prototipos
-void DefineMatrix(int r, int c, float **m);
-void GetMatrix(int r, int c, float **m);
-void ShowMatrix(float **m, int r, int c);
-void MultMatrix();
+// Prototipos de funciones
 void CleanBuffer();
-
-// Constantes
+int Menu();
+void StartMatrix(float ***, int *, int *);
+void GetMatrix(float ***, int *, int *);
+void ShowMatrix(float **, int , int );
 
 int main(void){
-	// Declaracion e Inicializacino de variables	
+	// Llamada al menu del programa
+	Menu();
+	return 0; // Finalizacion del programa
+}
+
+// Procedimientos
+int Menu(){
 	int opc = 0;
-	float *m1 = NULL, *m2 = NULL;
-	int row1 = 0, col1 = 0, row2 = 0, col2 = 0;
+	int rows1 = 0, cols1 = 0;
+	int rows2 = 0, cols2 = 0;
+	float **matrixA = NULL, **matrixB = NULL;
 	do{
 		printf("--Menu--\n");
-		printf("[1] Capturar Matriz A [2] Capturar Matriz B [3] Desplegar Matrices\n[4] Multiplicar Matrices [0] Terminar Programa\n");
-		printf("Selecciona una opcion\n>> ");
+		printf("[1] Capturar Matriz A [2] Caputrar Matriz B \n[3] Desplegar Matices [4] Mutiplicar Matrices \n[0] Terminar programa\n");
+		printf("Selecciona una opcion.\n>> ");
 		scanf("%d", &opc);
 		CleanBuffer();
 		switch(opc){
-			case 1: //Matriz A
-				// Liberamos memoria en caso de querer hacer una nueva matriz
-				free(m1);
-				// Pedimos dimensiones de la matriz
-				printf("Cuantos renglones tendra la matriz?\n>> ");
-				scanf("&d", &row1);
-				CleanBuffer();
-				printf("Cuantas columnas tendra la matriz?\n>> ");
-				scanf("%d", &col1);
-				CleanBuffer();
-				// Llamamos a la funcion para definir
-				DefineMatrix(row1, col1, &m1);
-				printf("Matriz A definida\n");
-				// Llamamos a la funcion para registrar datos
-				GetMatrix(row1, col1, &m1);
+			case 1: // Matriz A
+				printf("\nMatriz A\n");
+				StartMatrix(&matrixA, &rows1, &cols1);
+				GetMatrix(&matrixA, &rows1, &cols1);
 				break;
-			case 2: //Matriz B
-				// Mismo procedimiento que en el case 1
-				free(m2);
-				printf("Cuantos renglones tendra la matriz?\n>> ");
-				scanf("&d", &row2);
-				CleanBuffer();
-				printf("Cuantas columnas tendra la matriz?\n>> ");
-				scanf("%d", &col2);
-				CleanBuffer();
-				DefineMatrix(row2, col2, &m2);
-				printf("Matriz B definida\n");
+			case 2: // Matriz B
+				printf("\nMatriz B\n");
+				StartMatrix(&matrixB, &rows2, &cols2);
+				GetMatrix(&matrixB, &rows2, &cols2);
 				break;
-			case 3:
-				// Mostramos matrices en pantalla
-				printf("Matriz A\n");
-				ShowMatrix(&m1, row1, col1);
-				printf("Matriz B\n");
-				ShowMatrix(&m2, row2, col2);
+			case 3: // Despliegue
+				printf("\nMatriz A\n");
+				ShowMatrix(matrixA, rows1, cols1);
+				printf("\nMatriz B\n");
+				ShowMatrix(matrixB, rows2, cols2);
 				break;
 			case 4:
-				MultMatrix();
 				break;
 			case 0:
 				printf("Finalizando programa...\n");
-				return 1;
 				break;
 			default:
 				printf("Opcion invalida...\n");
@@ -78,36 +61,46 @@ int main(void){
 	}while(opc != 0);
 
 	return 0;
+	
 }
-
-// Procedimientos
-
-void DefineMatrix(int r, int c, float **m){
-	// Reservamos 3 espacios de memoria para los renglones
-	*m = (float*)malloc(r*sizeof(float*));
-	// Para cada renglon asignado reservamos 3 columnas inicializados en 0
-	for(int i = 0; i < r; i++){
-		m[i] = (float*)calloc(c, sizeof(float*));
-	}
-}
-void GetMatrix(int r, int c, float **m){
-	for(int i = 0; i < r; i++){
-		for(int j = 0; j < c; j++){
-			printf("m[%d][%d] >> ", i, j);
-			scanf("%f", m[i][j]);
-		}
-	}
-}
-void ShowMatrix(float **m, int r, int c){
-	for(int i = 0; i < r; i++){
-		for(int j = 0; j < c; j++){
-			printf("%f", m[i][j]);
-		}
-		printf("\n");
-	}		
-}
-void MultMatrix(){}
 void CleanBuffer(){
 	char c;
-	while((c = getchar() ) != '\n' && c != EOF);
+    while ((c = getchar()) != '\n' && c != EOF) {} // Limpiar buffer de entrada
+}
+
+void StartMatrix(float ***matrix, int *rows, int *cols){
+	
+    printf("Renglones >> ");
+    scanf("%d", rows);
+    CleanBuffer();
+    printf("Columnas >> ");
+    scanf("%d", cols);
+    CleanBuffer();
+
+    // Reservar memoria
+    *matrix = (float **)malloc(*rows * sizeof(float *));
+    for (int i = 0; i < *rows; i++) // aquí debe ser 'rows', no 'cols'
+        (*matrix)[i] = (float *)calloc(*cols, sizeof(float));
+}
+
+void GetMatrix(float ***matrix, int *rows, int *cols){
+	for (int i = 0; i < (*rows); i++){
+        for (int j = 0; j < (*cols); j++){
+            printf("Matrix[%d][%d] >> ", i, j);
+            scanf("%f", &(*matrix)[i][j]);
+        }
+    }
+}
+
+void ShowMatrix(float **matrix, int rows, int cols){
+	if (matrix == NULL){
+		printf("Matriz no capturada\n");
+		return;
+	}
+	for (int i = 0; i < rows; i++){
+        for (int j = 0; j < cols; j++){
+            printf("%3.1f ", matrix[i][j]);
+        }
+        printf("\n");
+    }
 }
