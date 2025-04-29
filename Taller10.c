@@ -13,6 +13,7 @@ int Menu();
 void StartMatrix(float ***, int *, int *);
 void GetMatrix(float ***, int *, int *);
 void ShowMatrix(float **, int , int );
+void MultMatrix(float ***, float ***, float ***, int, int, int, int);
 
 int main(void){
 	// Llamada al menu del programa
@@ -25,10 +26,10 @@ int Menu(){
 	int opc = 0;
 	int rows1 = 0, cols1 = 0;
 	int rows2 = 0, cols2 = 0;
-	float **matrixA = NULL, **matrixB = NULL;
+	float **matrixA = NULL, **matrixB = NULL, **matrixC = NULL;
 	do{
-		printf("--Menu--\n");
-		printf("[1] Capturar Matriz A [2] Caputrar Matriz B \n[3] Desplegar Matices [4] Mutiplicar Matrices \n[0] Terminar programa\n");
+		printf("\n--Menu--\n\n");
+		printf("[1] Capturar Matriz A [3] Desplegar Matrices \n[2] Capturar Matriz B [4] Mutiplicar Matrices \n[0] Terminar programa\n");
 		printf("Selecciona una opcion.\n>> ");
 		scanf("%d", &opc);
 		CleanBuffer();
@@ -50,8 +51,33 @@ int Menu(){
 				ShowMatrix(matrixB, rows2, cols2);
 				break;
 			case 4:
+				MultMatrix(&matrixA, &matrixB, &matrixC, rows1, cols1, rows2, cols2);
 				break;
 			case 0:
+				// Liberacion de memoria
+				if(matrixA != NULL){
+					for(int i = 0; i < rows1; i++){
+						free(matrixA[i]);
+					}
+					free(matrixA);
+					matrixA = NULL;
+				}
+
+				if(matrixB != NULL){
+					for(int i = 0; i < rows2; i++){
+						free(matrixB[i]);
+					}
+					free(matrixB);
+					matrixB = NULL;
+				}
+
+				if(matrixC != NULL){
+					for(int i = 0; i < rows1; i++){
+						free(matrixC[i]);
+					}
+					free(matrixC);
+					matrixC = NULL;
+				}
 				printf("Finalizando programa...\n");
 				break;
 			default:
@@ -79,7 +105,7 @@ void StartMatrix(float ***matrix, int *rows, int *cols){
 
     // Reservar memoria
     *matrix = (float **)malloc(*rows * sizeof(float *));
-    for (int i = 0; i < *rows; i++) // aquí debe ser 'rows', no 'cols'
+    for (int i = 0; i < *rows; i++) 
         (*matrix)[i] = (float *)calloc(*cols, sizeof(float));
 }
 
@@ -103,4 +129,31 @@ void ShowMatrix(float **matrix, int rows, int cols){
         }
         printf("\n");
     }
+}
+
+void MultMatrix(float ***matrixA, float ***matrixB, float ***matrixC, int r1, int c1, int r2, int c2){
+	/*
+		2x4*4x3 Si se puede
+		La matriz resultate seria 2x3
+	*/
+	if(c1 == r2){
+		// Reservacion de matriz resultante 
+		*matrixC = (float **)malloc(r1 * sizeof(float *));
+		for(int i = 0; i < r1; i++){
+			(*matrixC)[i] = (float *)calloc(c2, sizeof(float)); 
+		}
+		// Calculo de la matriz resultante
+		for(int i = 0; i < r1; i++){
+			for(int j = 0; j < c2; j++){
+				for(int k = 0; k < r2; k++){
+					(*matrixC)[i][j] += (*matrixA)[i][k] * (*matrixB)[k][j];
+				}
+			}
+		}
+		// Despliegue de la matriz resultante
+		printf("\nMatriz resultante\n");
+		ShowMatrix(*matrixC, r1, c2);
+	}else{
+		printf("No es posible hacer la multiplicacion...\n");
+	}
 }
