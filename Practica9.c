@@ -26,6 +26,7 @@ typedef struct {
 
 // Prototipos
 
+void Menu(Producto*, Ticket*, int);
 void ClearBuffer();
 void StartProducts(Producto*, int);
 void StartTicket(Ticket*, int);
@@ -35,21 +36,54 @@ void AddProduct(Producto*, int);
 void ScanProduct(Ticket*, Producto*, int);
 
 int main(void){
+    // Declaracion e Inicializacion de variables
     Producto inventario[MAX];
     Ticket registro[MAX];
-
+    // Inicializacion de arreglos
     StartProducts(&inventario[0], MAX);
     StartTicket(&registro[0], MAX);
-    AddProduct(&inventario[0], MAX);
-    ScanProduct(&registro[0], &inventario[0], MAX);
-    printf("\nProductos\n\n");
-    ShowProducts(&inventario[0], MAX);
-    printf("\nTicket\n\n");
-    ShowTicket(&registro[0], MAX);
+    // Llamada a menu
+    Menu(&inventario[0], &registro[0], MAX);
     return 0;
 }
 
 // Procedimientos
+void Menu(Producto *inventario, Ticket *registro, int size){
+    int opc = 0;
+    do{
+        printf("\n---------------------------Calimax---------------------------\n");
+        printf("[1] Agregar/Editar Productos  [4] Mostrar Ticket de Compra\n");
+        printf("[2] Escanear Codigo           [5] Borrar Ticket de compra\n");
+        printf("[3] Mostra Lista de Productos [0] Terminar Programa\n");
+        printf("Seleccione una opcion\n>> ");
+        scanf("%d", &opc);
+        switch(opc){
+            case 1: // Agregar/Editar Productos'
+                AddProduct(&inventario[0], size);
+                break;
+            case 2: // Escarear Codigo
+                ScanProduct(&registro[0], &inventario[0], size);
+                break;
+            case 3: // Mostrar Lista de Productos
+                printf("\nProductos\n\n");
+                ShowProducts(&inventario[0], size);
+                break;
+            case 4: // Mostrar Ticket de Compra
+                printf("\nTicket\n\n");
+                ShowTicket(&registro[0], size);
+                break;  
+            case 5: // Borrar Ticket de Compra
+                StartTicket(&registro[0], size);
+                break;
+            case 0:
+                printf("Terminando programa...\n");
+                break;
+            default:
+                printf("Opcion invalida...\n");
+                break;
+        }
+    }while(opc != 0);
+}
 void ClearBuffer(){
     char c;
 	while((c = getchar() ) != '\n' && c != EOF);
@@ -83,7 +117,7 @@ void ShowProducts(Producto *producto, int size){
 void ShowTicket(Ticket *registro, int size){
     printf("%-5s %-10s %s\n", "#", "Referencia", "Cantidad");
     for(int i = 0; i < size; i++){
-        if(registro->ref != NULL)
+        if(registro[i].ref != NULL)
             printf("%-8d %-11lld %-10d\n", i+1, registro[i].ref->codigo, registro[i].cantidad);
     }
 }
@@ -133,7 +167,6 @@ void ScanProduct(Ticket *registro, Producto *inventario, int size){
     printf("Escanea el codigo del producto: ");
     scanf("%lld", &code);
     ClearBuffer();
-    
     // Buscar el prodcuto en el inventario
     Producto *foundProduct = NULL;
     for(int i = 0; i < size; i++){
@@ -141,12 +174,10 @@ void ScanProduct(Ticket *registro, Producto *inventario, int size){
             foundProduct = &inventario[i];
         }
     }
-
     if(foundProduct == NULL){
         printf("Codigo no registrado\nPor favor registra el codigo en la lista de productos o asegurate de ingresar bien el codigo\n");
         return;
     }
-
     // Buscar la direccion en el ticket
     for(int i = 0; i < size; i++){
         if(registro[i].ref == foundProduct){
@@ -155,7 +186,6 @@ void ScanProduct(Ticket *registro, Producto *inventario, int size){
             return;
         }
     }
-
     // Si no esta en el ticket, asignamos una posicion
     for(int i = 0; i < size; i++){
         if(registro[i].ref == NULL){
@@ -164,6 +194,5 @@ void ScanProduct(Ticket *registro, Producto *inventario, int size){
             return;
         }
     }
-
     printf("No hay espacio en el ticket para agregar más productos.\n");
 }
