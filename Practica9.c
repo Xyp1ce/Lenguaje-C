@@ -32,6 +32,7 @@ void StartTicket(Ticket*, int);
 void ShowProducts(Producto*, int);
 void ShowTicket(Ticket*, int);
 void AddProduct(Producto*, int);
+void ScanProduct(Ticket*, Producto*, int);
 
 int main(void){
     Producto inventario[MAX];
@@ -40,6 +41,7 @@ int main(void){
     StartProducts(&inventario[0], MAX);
     StartTicket(&registro[0], MAX);
     AddProduct(&inventario[0], MAX);
+    ScanProduct(&registro[0], &inventario[0], MAX);
     printf("\nProductos\n\n");
     ShowProducts(&inventario[0], MAX);
     printf("\nTicket\n\n");
@@ -73,14 +75,16 @@ void StartTicket(Ticket *registro, int size){
 void ShowProducts(Producto *producto, int size){
     printf("%-10s %-10s %-10s %10s\n", "#", "Codigo", "Nombre", "Precio");
     for(int i = 0; i < size; i++){
-        printf("%-12d %-7lld %-15s %-.2f\n", i+1, producto[i].codigo, producto[i].nombre, producto[i].precio);
+        if(producto[i].codigo != -1){
+            printf("%-12d %-7lld %-15s %-.2f\n", i+1, producto[i].codigo, producto[i].nombre, producto[i].precio);
+        }
     }
 }
 void ShowTicket(Ticket *registro, int size){
     printf("%-5s %-10s %s\n", "#", "Referencia", "Cantidad");
     for(int i = 0; i < size; i++){
-        if(registro->ref == NULL)
-            printf("%-8d %-11s %-10d\n", i+1, "NULL", registro[i].cantidad);
+        if(registro->ref != NULL)
+            printf("%-8d %-11lld %-10d\n", i+1, registro[i].ref->codigo, registro[i].cantidad);
     }
 }
 void AddProduct(Producto *producto, int size){
@@ -123,4 +127,43 @@ void AddProduct(Producto *producto, int size){
             return;
         }
     }
+}
+void ScanProduct(Ticket *registro, Producto *inventario, int size){
+    long long code = 0;
+    printf("Escanea el codigo del producto: ");
+    scanf("%lld", &code);
+    ClearBuffer();
+    
+    // Buscar el prodcuto en el inventario
+    Producto *foundProduct = NULL;
+    for(int i = 0; i < size; i++){
+        if(inventario[i].codigo == code){
+            foundProduct = &inventario[i];
+        }
+    }
+
+    if(foundProduct == NULL){
+        printf("Codigo no registrado\nPor favor registra el codigo en la lista de productos o asegurate de ingresar bien el codigo\n");
+        return;
+    }
+
+    // Buscar la direccion en el ticket
+    for(int i = 0; i < size; i++){
+        if(registro[i].ref == foundProduct){
+            // El producto ya se encuentra, incrementamos cantidad
+            registro[i].cantidad++;
+            return;
+        }
+    }
+
+    // Si no esta en el ticket, asignamos una posicion
+    for(int i = 0; i < size; i++){
+        if(registro[i].ref == NULL){
+            registro[i].ref = foundProduct;
+            registro[i].cantidad = 1;
+            return;
+        }
+    }
+
+    printf("No hay espacio en el ticket para agregar más productos.\n");
 }
