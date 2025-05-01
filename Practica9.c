@@ -26,29 +26,30 @@ typedef struct {
 
 // Prototipos
 
-void Menu(Producto*, Ticket*, int);
+void Menu(Producto*, Ticket*, int, float *);
 void ClearBuffer();
 void StartProducts(Producto*, int);
 void StartTicket(Ticket*, int);
 void ShowProducts(Producto*, int);
-void ShowTicket(Ticket*, int);
+void ShowTicket(Ticket*, int, float *);
 void AddProduct(Producto*, int);
-void ScanProduct(Ticket*, Producto*, int);
+void ScanProduct(Ticket*, Producto*, int, float *);
 
 int main(void){
     // Declaracion e Inicializacion de variables
     Producto inventario[MAX];
     Ticket registro[MAX];
+    float total = 0;
     // Inicializacion de arreglos
     StartProducts(&inventario[0], MAX);
     StartTicket(&registro[0], MAX);
     // Llamada a menu
-    Menu(&inventario[0], &registro[0], MAX);
+    Menu(&inventario[0], &registro[0], MAX, &total);
     return 0;
 }
 
 // Procedimientos
-void Menu(Producto *inventario, Ticket *registro, int size){
+void Menu(Producto *inventario, Ticket *registro, int size, float *total){
     int opc = 0;
     do{
         printf("\n---------------------------Calimax---------------------------\n");
@@ -62,7 +63,7 @@ void Menu(Producto *inventario, Ticket *registro, int size){
                 AddProduct(&inventario[0], size);
                 break;
             case 2: // Escarear Codigo
-                ScanProduct(&registro[0], &inventario[0], size);
+                ScanProduct(&registro[0], &inventario[0], size, total);
                 break;
             case 3: // Mostrar Lista de Productos
                 printf("\nProductos\n\n");
@@ -70,7 +71,7 @@ void Menu(Producto *inventario, Ticket *registro, int size){
                 break;
             case 4: // Mostrar Ticket de Compra
                 printf("\nTicket\n\n");
-                ShowTicket(&registro[0], size);
+                ShowTicket(&registro[0], size, total);
                 break;  
             case 5: // Borrar Ticket de Compra
                 StartTicket(&registro[0], size);
@@ -114,12 +115,13 @@ void ShowProducts(Producto *producto, int size){
         }
     }
 }
-void ShowTicket(Ticket *registro, int size){
+void ShowTicket(Ticket *registro, int size, float *total){
     printf("%-5s %-10s %s\n", "#", "Referencia", "Cantidad");
     for(int i = 0; i < size; i++){
         if(registro[i].ref != NULL)
             printf("%-8d %-11lld %-10d\n", i+1, registro[i].ref->codigo, registro[i].cantidad);
     }
+    printf("%-10s %.2f\n", "Total", *total);
 }
 void AddProduct(Producto *producto, int size){
     long long code = 0;
@@ -162,7 +164,7 @@ void AddProduct(Producto *producto, int size){
         }
     }
 }
-void ScanProduct(Ticket *registro, Producto *inventario, int size){
+void ScanProduct(Ticket *registro, Producto *inventario, int size, float *total){
     long long code = 0;
     printf("Escanea el codigo del producto: ");
     scanf("%lld", &code);
@@ -183,6 +185,7 @@ void ScanProduct(Ticket *registro, Producto *inventario, int size){
         if(registro[i].ref == foundProduct){
             // El producto ya se encuentra, incrementamos cantidad
             registro[i].cantidad++;
+            *total += registro[i].ref->precio;
             return;
         }
     }
@@ -191,6 +194,7 @@ void ScanProduct(Ticket *registro, Producto *inventario, int size){
         if(registro[i].ref == NULL){
             registro[i].ref = foundProduct;
             registro[i].cantidad = 1;
+            *total += registro[i].ref->precio;
             return;
         }
     }
