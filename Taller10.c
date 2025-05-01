@@ -96,6 +96,14 @@ void CleanBuffer(){
 
 void StartMatrix(float ***matrix, int *rows, int *cols){
 	
+	if(*matrix != NULL){
+		for(int i = 0; i < *rows; i++){
+			free((*matrix)[i]);
+		}
+		free(*matrix);
+		*matrix = NULL;
+	}
+
     printf("Renglones >> ");
     scanf("%d", rows);
     CleanBuffer();
