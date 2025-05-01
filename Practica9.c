@@ -26,10 +26,12 @@ typedef struct {
 
 // Prototipos
 
+void ClearBuffer();
 void StartProducts(Producto*, int);
 void StartTicket(Ticket*, int);
 void ShowProducts(Producto*, int);
 void ShowTicket(Ticket*, int);
+void AddProduct(Producto*, int);
 
 int main(void){
     Producto inventario[MAX];
@@ -37,6 +39,7 @@ int main(void){
 
     StartProducts(&inventario[0], MAX);
     StartTicket(&registro[0], MAX);
+    AddProduct(&inventario[0], MAX);
     printf("\nProductos\n\n");
     ShowProducts(&inventario[0], MAX);
     printf("\nTicket\n\n");
@@ -45,6 +48,10 @@ int main(void){
 }
 
 // Procedimientos
+void ClearBuffer(){
+    char c;
+	while((c = getchar() ) != '\n' && c != EOF);
+}
 void StartProducts(Producto *producto, int size){
     for(int i = 0; i < size; i++){
         producto[i].codigo = -1;
@@ -66,7 +73,7 @@ void StartTicket(Ticket *registro, int size){
 void ShowProducts(Producto *producto, int size){
     printf("%-10s %-10s %-10s %10s\n", "#", "Codigo", "Nombre", "Precio");
     for(int i = 0; i < size; i++){
-        printf("%-12d %-7lld %-16s %-10.2f\n", i+1, producto[i].codigo, producto[i].nombre, producto[i].precio);
+        printf("%-12d %-7lld %-15s %-.2f\n", i+1, producto[i].codigo, producto[i].nombre, producto[i].precio);
     }
 }
 void ShowTicket(Ticket *registro, int size){
@@ -74,5 +81,46 @@ void ShowTicket(Ticket *registro, int size){
     for(int i = 0; i < size; i++){
         if(registro->ref == NULL)
             printf("%-8d %-11s %-10d\n", i+1, "NULL", registro[i].cantidad);
+    }
+}
+void AddProduct(Producto *producto, int size){
+    long long code = 0;
+    int newPrice = 0;
+    int indx = 0;
+    printf("Ingresa el codigo del producto: ");
+    scanf("%lld", &code);
+    ClearBuffer();
+    // Se busca el codigo ingresado
+    for(int i = 0; i < size; i++){
+        if(producto[i].codigo == code){
+            // Se modifica el precio del codigo encontrado
+            printf("Actualiza el precio del producto [%s]\n>> ", producto[i].nombre);
+            scanf("%d", &newPrice);
+            ClearBuffer();
+            producto[i].precio = newPrice;
+            return;
+        }
+    }
+    // No se encontro un codigo igual
+    // Se genera un nuevo producto
+    for(int i = 0; i < size; i++){
+        if(producto[i].codigo == -1){
+            // Creamos nuevo producto
+            producto[i].codigo = code;
+            printf("Ingresa el nombre del nuevo producto\n>> ");
+            fgets(producto[i].nombre, MAX, stdin);
+            // Removemos el salto de linea ingresado por el fgets
+            for (int j = 0; producto[i].nombre[j] != '\0'; j++) {
+                if (producto[i].nombre[j] == '\n') {
+                    producto[i].nombre[j] = '\0'; 
+                    break;
+                }
+            }
+            printf("Ingresa el precio del nuevo producto\n>> ");
+            scanf("%d", &newPrice);
+            ClearBuffer();
+            producto[i].precio = newPrice;
+            return;
+        }
     }
 }
